@@ -12,7 +12,12 @@ local Fruit = require('fruit')
 local util = require('util')
 
 total = 0
-refreshRate = 0
+refreshRate = 1
+
+function love.load()
+	canvas = love.graphics.newCanvas(750, 750)
+	love.graphics.setCanvas(canvas)
+end
 
 function love.update(dt)
     total = total + dt
