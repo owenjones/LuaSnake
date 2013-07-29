@@ -9,7 +9,7 @@ function grid.new(numX, numY, cellSize)
 end
 
 function grid:clear()
-	self.sections = {}
+	self.tiles = {}
 end
 
 function grid:draw()
@@ -17,8 +17,8 @@ function grid:draw()
 end
 
 function grid:placeAt(x, y, is, obj)
-	if grid:isFree(x, y) then
-		table.insert(self.sections, {x = x, y = y, is = is, obj = obj})
+	if grid:isFree(x, y) and grid:canPlaceAt(x, y) then
+		table.insert(self.tiles, {x = x, y = y, is = is, obj = obj})
 		return true
 	else
 		return false
@@ -27,7 +27,7 @@ end
 
 function grid:isFree(x, y)
 	if self.sections then
-		for _, sec in pairs(self.sections) do
+		for _, sec in pairs(self.tiles) do
 			if sec.x == x and sec.y == y then
 				return false
 			end
@@ -37,8 +37,8 @@ function grid:isFree(x, y)
 	return true
 end
 
-function grid:test()
-	print("TEST")
+function grid:canPlaceAt(x, y)
+	return (x >= 0) and (x <= self.x) and (y >= 0) and (y <= self.y)
 end
 
 return grid
