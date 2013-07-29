@@ -14,15 +14,31 @@ local Fruit = require('fruit')
 local Grid = require('grid')
 local util = require('util')
 
-total = 0
-refreshRate = 1
+-- Globals
+updateRate = 0.25
+refreshRate = 2 * updateRate
+
+snakeSectionsStart = 4
+canPassWalls = false
+
+grid = Grid.new(60, 60, 10)
 
 function love.load()
-	canvas = love.graphics.newCanvas(1000, 1000)
+	background()
+	
+end
+
+function background()
+	canvas = love.graphics.newCanvas()
 	love.graphics.setCanvas(canvas)
 	canvas:clear()
-	love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.rectangle('fill', 0, 0, 100, 100)
+
+	love.graphics.setBackgroundColor(5, 5, 5)
+
+	love.graphics.setColor(185, 128, 0)
+	love.graphics.rectangle('fill', 4, 4, 600, 600)
+
+	love.graphics.setCanvas()
 end
 
 function love.draw()
