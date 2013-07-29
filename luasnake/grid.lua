@@ -28,12 +28,12 @@ end
 function grid:isFree(x, y)
 	if self.sections then
 		for _, sec in pairs(self.sections) do
-				if sec.x == x and sec.y == y then
-					return false
-				end
+			if sec.x == x and sec.y == y then
+				return false
+			end
 		end
 	end
-	
+
 	return true
 end
 
