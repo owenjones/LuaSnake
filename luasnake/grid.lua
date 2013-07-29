@@ -2,8 +2,8 @@
 
 local grid = {} ; grid.__index = grid
 
-function grid.new(numX, numY, cellSize)
-	local g = setmetatable({x = numX, y = numY, size = cellSize}, grid)
+function grid.new(x, y, size)
+	local g = setmetatable({x = x, y = y, size = size}, grid)
 	g:clear()
 	return g
 end
@@ -13,11 +13,15 @@ function grid:clear()
 end
 
 function grid:draw()
-
+	if self.tiles then
+		for _, tile in pairs(self.tiles) do
+			tile.obj:draw(tile.x, tile.y, self.size)
+		end
+	end
 end
 
 function grid:placeAt(x, y, is, obj)
-	if grid:isFree(x, y) and grid:canPlaceAt(x, y) then
+	if self:isFree(x, y) and self:canPlaceAt(x, y) then
 		table.insert(self.tiles, {x = x, y = y, is = is, obj = obj})
 		return true
 	else
@@ -27,8 +31,8 @@ end
 
 function grid:isFree(x, y)
 	if self.sections then
-		for _, sec in pairs(self.tiles) do
-			if sec.x == x and sec.y == y then
+		for _, tile in pairs(self.tiles) do
+			if tile.x == x and tile.y == y then
 				return false
 			end
 		end
