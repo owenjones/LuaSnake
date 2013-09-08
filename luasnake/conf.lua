@@ -3,7 +3,7 @@
 dev = true
 
 function love.conf(s)
-	s.title    = "Snake"
+	s.title    = "LuaSnake"
 	s.version  = "0.8.0"
 	s.author   = "Owen Jones"
 	s.url      = "https://github.com/owenjones/LuaSnake"
