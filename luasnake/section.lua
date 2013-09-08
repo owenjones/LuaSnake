@@ -4,21 +4,22 @@ local section = {} ; section.__index = section
 
 function section.new(p)
 	p = p or false
-	local s = setmetatable({parent = p, x = 0, y = 0}, section)
+	local s = setmetatable({parent = p, x = -1, y = -1}, section)
 	return s
 end
 
 function section:set(x, y)
 	self.x = x
 	self.y = y
+	grid:placeAt(self.x, self.y, "section", self)
 end
 
-function section:extract()
+function section:update()
 	if self.parent then
 		self.x = self.parent.x
 		self.y = self.parent.y
 		grid:placeAt(self.x, self.y, "section", self)
-		self.parent:extract()
+		self.parent:update()
 	end
 end
 
