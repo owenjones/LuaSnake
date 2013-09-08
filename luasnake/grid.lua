@@ -15,7 +15,7 @@ end
 function grid:draw()
 	if self.tiles then
 		for _, tile in pairs(self.tiles) do
-			tile.obj:draw(tile.x, tile.y, self.size)
+			tile.obj:draw()
 		end
 	end
 end
@@ -23,6 +23,7 @@ end
 function grid:placeAt(x, y, is, obj)
 	if self:canPlaceAt(x, y) and self:isFree(x, y) then
 		table.insert(self.tiles, {x = x, y = y, is = is, obj = obj})
+		obj:set(x, y)
 		return true
 	else
 		return false
