@@ -7,6 +7,11 @@
     Contact: owen@owenjones.net
 
     Released under Apache V2 License
+
+	TODO: * Add a scoreboard
+	      * Add sounds
+		  * Add control/help dialogues
+		  * Refactor/tidy-up (e.g. integrate extendSnake into snake object)
 --]]
 
 local Section = require('section')
@@ -18,9 +23,9 @@ game = setmetatable({
 	playing  = false,
 	paused   = false,
 	ended    = false,
-	mode     = 0, -- 0: Can't pass through walls or self,
-	              -- 1: Can pass through walls but not self,
-	              -- 2: Can pass through walls and self
+	mode     = 1, -- 1: Can't pass through walls or self,
+	              -- 2: Can pass through walls but not self,
+	              -- 3: Can pass through walls and self
 	sections = 1,
 	score    = 0
 }, game)
@@ -44,6 +49,7 @@ snake = setmetatable({
 	x = 0,
 	y = 0,
 	direction = 1,
+	nextDirection = 1,
 	head = false,
 	tail = false,
 }, snake)
@@ -52,7 +58,7 @@ snake = setmetatable({
 function drawBackground()
 	love.graphics.setBackgroundColor(5, 5, 5)
 	local r, g, b, a = love.graphics.getColor()
-	love.graphics.setColor(185, 128, 0)
+	love.graphics.setColor(185, 128, 0, 250)
 	love.graphics.rectangle("fill", 4, 4, 600, 600)
 	love.graphics.setColor(r, g, b, a)
 end
@@ -73,7 +79,8 @@ function drawStats()
 	local r, g, b, a = love.graphics.getColor()
 	love.graphics.setFont(fonts.score)
 	love.graphics.setColor(185, 128, 0)
-	love.graphics.printf("Mode: " .. game.mode .. ", Sections: " .. game.sections .. ", FPS: " .. love.timer.getFPS(), 204, 602, 400, "right")
+	love.graphics.printf("Mode: " .. game.mode .. ", Sections: " ..
+						 game.sections .. ", FPS: " .. love.timer.getFPS(), 204, 602, 400, "right")
 	love.graphics.setColor(r, g, b, a)
 end
 
@@ -126,6 +133,7 @@ function newGame()
 	snake.x = 0
 	snake.y = 0
 	snake.direction = 1
+	snake.nextDirection = 1
 
 	game.ended = false
 	game.playing = true
@@ -137,7 +145,7 @@ end
 
 function initalise()
 	canvas = love.graphics.newCanvas()
-	grid = Grid.new(60, 60, 10)
+	grid = Grid.new(40, 40, 15)
 
 	fruit = Fruit.new()
 	moveFruit()
@@ -149,7 +157,7 @@ function initalise()
 end
 
 function moveFruit()
-	local x, y = math.random(0, 59), math.random(0, 59)
+	local x, y = math.random(0, grid.x - 1), math.random(0, grid.y - 1)
 	if grid:isFree(x, y) then
 		fruit.x, fruit.y = x, y
 	else
@@ -171,7 +179,7 @@ function nextMove()
 	end
 
 	-- Wall wrap-around if in game modes 1 & 2
-	if game.mode > 0 then
+	if game.mode > 1 then
 		if x >= grid.x then
 			x = 0
 		end
@@ -234,10 +242,12 @@ function love.keypressed(key)
 			togglePause()
 		elseif directions[key] then
 			-- Test to stop snake doubling back on itself, unless GM2
-			if (game.mode ~= 2 and math.abs(directions[key] - snake.direction) ~= 2)
-				or (game.mode == 2) then
-				snake.direction = directions[key]
+			if (game.mode ~= 3 and math.abs(directions[key] - snake.direction) ~= 2)
+				or (game.mode == 3) then
+				snake.nextDirection = directions[key]
 			end
+		elseif key == "1" or key == "2" or key == "3" then
+			game.mode = tonumber(key)
 		end
 	else
 		if game.paused then
@@ -256,6 +266,7 @@ function love.update(passed)
     update.total = update.total + passed
     if update.total >= update.rate then
 		if game.playing and not game.paused and not game.ended then
+			snake.direction = snake.nextDirection
 			local x, y = nextMove()
 
 			if not grid:isFree(x, y) then
@@ -263,12 +274,12 @@ function love.update(passed)
 					moveFruit()
 					extendSnake(8)
 					game.score = game.score + 10
-				elseif game.mode ~= 2 then
+				elseif game.mode ~= 3 then
 					gameOver()
 				end
 			end
 
-			if not grid:canPlaceAt(x, y) then
+			if not grid:canPlaceAt(x, y) and game.mode == 1 then
 				gameOver()
 			end
 
