@@ -12,25 +12,20 @@
 local Section = require('section')
 local Fruit = require('fruit')
 local Grid = require('grid')
-local util = require('util')
 
 -- Globals
 game = setmetatable({
 	playing  = false,
 	paused   = false,
 	ended    = false,
-	sections = 6, -- The number of additional sections to draw at the start of the game
-	mode     = 0, -- 0: Can't pass through walls,
+	sections = 5, -- The number of additional sections to draw at the start of the game
+	mode     = 0, -- 0: Can't pass through walls or self,
 	              -- 1: Can pass through walls but not self,
 	              -- 2: Can pass through walls and self
 	score    = 0
 }, game)
 
-objects = setmetatable({
-	fruit = false,
-	head = false,
-	sections = {}
-}, objects)
+directions = {["up"] = 0, ["right"] = 1, ["down"] = 2, ["left"] = 3}
 
 fonts = setmetatable({
 	title      = love.graphics.newFont("fonts/title.ttf", 100),
@@ -45,8 +40,13 @@ update = setmetatable({
 	rate = 0.075
 }, update)
 
-directions = {["up"] = 0, ["right"] = 1, ["down"] = 2, ["left"] = 3}
-currentDirection = 1
+snake = setmetatable({
+	x = 0,
+	y = 0,
+	direction = 1,
+	head = false,
+	tail = false,
+}, snake)
 
 -- DRAW STUFF FUNCTIONS
 function drawBackground()
@@ -64,8 +64,8 @@ end
 function drawScore()
 	local r, g, b, a = love.graphics.getColor()
 	love.graphics.setFont(fonts.score)
-	love.graphics.setColor(0, 0, 0)
-	love.graphics.printf("Score: " .. game.score, 6, 580, 200, "left")
+	love.graphics.setColor(185, 128, 0)
+	love.graphics.printf("Score: " .. game.score, 6, 602, 200, "left")
 	love.graphics.setColor(r, g, b, a)
 end
 
@@ -106,17 +106,39 @@ function drawGameOver()
 end
 
 -- CHANGE OF STATE FUNCTIONS
+function togglePause()
+	game.paused = not game.paused
+end
+
+function gameOver()
+	game.ended = true
+end
+
+function newGame()
+	snake.x = 0
+	snake.y = 0
+	snake.direction = 1
+	initalise()
+	game.ended = false
+	game.playing = true
+	game.score = 0
+end
+
+
 function initalise()
 	canvas = love.graphics.newCanvas()
 	grid = Grid.new(60, 60, 10)
 
-	objects.fruit = Fruit.new()
-	objects.head = Section.new(false)
-	objects.last = objects.head
+	fruit = Fruit.new()
+	moveFruit()
+
+	snake.head = Section.new(false)
+	snake.head:set(0, 0)
+	snake.tail = snake.head
 
 	for i = 1, game.sections do
-		local s = Section.new(objects.last)
-		objects.last = s
+		local s = Section.new(snake.tail)
+		snake.tail = s
 	end
 end
 
@@ -140,46 +162,63 @@ function render()
 	love.graphics.draw(canvas)
 end
 
-function gameOver()
-	game.ended = true
+function moveFruit()
+	local x, y = math.random(0, 60), math.random(0, 60)
+	if grid:isFree(x, y) then
+		fruit.x, fruit.y = x, y
+	else
+		moveFruit()
+	end
 end
 
-function newGame()
-	x = 0
-	y = 0
-	currentDirection = 1
-	initalise()
-	game.ended = false
-	game.playing = true
-	game.score = 0
-end
+function nextMove()
+	local x, y = snake.x, snake.y
 
-x = 0
-y = 0
-
-function tick()
-	grid:clear()
-	objects.last:extract()
-	grid:placeAt(10, 10, "fruit", objects.fruit)
-	grid:placeAt(x, y, "section", objects.head)
-
-	if currentDirection == 0 then
+	if snake.direction == 0 then
 		y = y - 1
-	elseif currentDirection == 1 then
+	elseif snake.direction == 1 then
 		x = x + 1
-	elseif currentDirection == 2 then
+	elseif snake.direction == 2 then
 		y = y + 1
-	elseif currentDirection == 3 then
+	elseif snake.direction == 3 then
 		x = x - 1
 	end
 
-	if (x > 59) or (y > 59) or (x < 0) or (y < 0) then
-		gameOver()
+
+
+	return x, y
+end
+
+function extendSnake(num)
+	num = num or game.sections
+	for i = 1, game.sections do
+		local s = Section.new(snake.tail)
+		snake.tail = s
 	end
 end
 
-function togglePause()
-	game.paused = not game.paused
+function tick()
+	local x, y = nextMove()
+
+	if not grid:isFree(x, y) then
+		if fruit:collision(x, y) then
+			moveFruit()
+			extendSnake(6)
+			game.score = game.score + 10
+		else
+			gameOver()
+		end
+	end
+
+	if not grid:canPlaceAt(x, y) then
+		gameOver()
+	end
+
+	grid:clear()
+	fruit:set(fruit.x, fruit.y)
+	snake.tail:update()
+	snake.x, snake.y = x, y
+	snake.head:set(x, y)
 end
 
 -- LÖVE FUNCTIONS
@@ -196,7 +235,7 @@ function love.keypressed(key)
 		if key == "escape" then
 			togglePause()
 		elseif directions[key] then
-			currentDirection = directions[key]
+			snake.direction = directions[key]
 		end
 	else
 		if game.paused then
@@ -214,7 +253,7 @@ end
 function love.update(passed)
     update.total = update.total + passed
     if update.total >= update.rate then
-		if game.playing and not game.paused then
+		if game.playing and not game.paused and not game.ended then
 			tick()
 		end
 		update.total = update.total - update.rate
