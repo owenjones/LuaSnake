@@ -10,7 +10,7 @@ function love.conf(s)
 	s.identity = "luasnake"
 
 	s.screen.width  = 608
-	s.screen.height = 608
+	s.screen.height = 628
 	s.screen.vsync  = true
 
 	if dev then
