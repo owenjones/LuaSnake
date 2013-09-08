@@ -18,10 +18,10 @@ game = setmetatable({
 	playing  = false,
 	paused   = false,
 	ended    = false,
-	sections = 5, -- The number of additional sections to draw at the start of the game
 	mode     = 0, -- 0: Can't pass through walls or self,
 	              -- 1: Can pass through walls but not self,
 	              -- 2: Can pass through walls and self
+	sections = 1,
 	score    = 0
 }, game)
 
@@ -66,6 +66,14 @@ function drawScore()
 	love.graphics.setFont(fonts.score)
 	love.graphics.setColor(185, 128, 0)
 	love.graphics.printf("Score: " .. game.score, 6, 602, 200, "left")
+	love.graphics.setColor(r, g, b, a)
+end
+
+function drawStats()
+	local r, g, b, a = love.graphics.getColor()
+	love.graphics.setFont(fonts.score)
+	love.graphics.setColor(185, 128, 0)
+	love.graphics.printf("Mode: " .. game.mode .. ", Sections: " .. game.sections .. ", FPS: " .. love.timer.getFPS(), 204, 602, 400, "right")
 	love.graphics.setColor(r, g, b, a)
 end
 
@@ -118,12 +126,14 @@ function newGame()
 	snake.x = 0
 	snake.y = 0
 	snake.direction = 1
-	initalise()
+
 	game.ended = false
 	game.playing = true
 	game.score = 0
-end
+	game.sections = 1
 
+	initalise()
+end
 
 function initalise()
 	canvas = love.graphics.newCanvas()
@@ -135,35 +145,11 @@ function initalise()
 	snake.head = Section.new(false)
 	snake.head:set(0, 0)
 	snake.tail = snake.head
-
-	for i = 1, game.sections do
-		local s = Section.new(snake.tail)
-		snake.tail = s
-	end
-end
-
-function render()
-	canvas:clear()
-	canvas:renderTo(drawBackground)
-
-	if game.playing and not game.ended then
-		canvas:renderTo(drawGrid)
-		canvas:renderTo(drawScore)
-	elseif game.ended then
-		canvas:renderTo(drawGameOver)
-	else
-		canvas:renderTo(drawTitle)
-	end
-
-	if game.paused then
-		canvas:renderTo(drawPausebox)
-	end
-
-	love.graphics.draw(canvas)
+	extendSnake(7)
 end
 
 function moveFruit()
-	local x, y = math.random(0, 60), math.random(0, 60)
+	local x, y = math.random(0, 59), math.random(0, 59)
 	if grid:isFree(x, y) then
 		fruit.x, fruit.y = x, y
 	else
@@ -184,41 +170,34 @@ function nextMove()
 		x = x - 1
 	end
 
+	-- Wall wrap-around if in game modes 1 & 2
+	if game.mode > 0 then
+		if x >= grid.x then
+			x = 0
+		end
 
+		if y >= grid.y then
+			y = 0
+		end
+
+		if x < 0 then
+			x = grid.x - 1
+		end
+
+		if y < 0 then
+			y = grid.y - 1
+		end
+	end
 
 	return x, y
 end
 
 function extendSnake(num)
-	num = num or game.sections
-	for i = 1, game.sections do
+	for i = 1, num do
 		local s = Section.new(snake.tail)
 		snake.tail = s
 	end
-end
-
-function tick()
-	local x, y = nextMove()
-
-	if not grid:isFree(x, y) then
-		if fruit:collision(x, y) then
-			moveFruit()
-			extendSnake(6)
-			game.score = game.score + 10
-		else
-			gameOver()
-		end
-	end
-
-	if not grid:canPlaceAt(x, y) then
-		gameOver()
-	end
-
-	grid:clear()
-	fruit:set(fruit.x, fruit.y)
-	snake.tail:update()
-	snake.x, snake.y = x, y
-	snake.head:set(x, y)
+	game.sections = game.sections + num
 end
 
 -- LÖVE FUNCTIONS
@@ -227,7 +206,26 @@ function love.load()
 end
 
 function love.draw()
-	render()
+	canvas:clear()
+	canvas:renderTo(drawBackground)
+
+	if game.playing and not game.ended then
+		canvas:renderTo(drawGrid)
+		canvas:renderTo(drawScore)
+		if dev then
+			canvas:renderTo(drawStats)
+		end
+	elseif game.ended then
+		canvas:renderTo(drawGameOver)
+	else
+		canvas:renderTo(drawTitle)
+	end
+
+	if game.paused then
+		canvas:renderTo(drawPausebox)
+	end
+
+	love.graphics.draw(canvas)
 end
 
 function love.keypressed(key)
@@ -235,7 +233,11 @@ function love.keypressed(key)
 		if key == "escape" then
 			togglePause()
 		elseif directions[key] then
-			snake.direction = directions[key]
+			-- Test to stop snake doubling back on itself, unless GM2
+			if (game.mode ~= 2 and math.abs(directions[key] - snake.direction) ~= 2)
+				or (game.mode == 2) then
+				snake.direction = directions[key]
+			end
 		end
 	else
 		if game.paused then
@@ -254,7 +256,27 @@ function love.update(passed)
     update.total = update.total + passed
     if update.total >= update.rate then
 		if game.playing and not game.paused and not game.ended then
-			tick()
+			local x, y = nextMove()
+
+			if not grid:isFree(x, y) then
+				if fruit:collision(x, y) then
+					moveFruit()
+					extendSnake(8)
+					game.score = game.score + 10
+				elseif game.mode ~= 2 then
+					gameOver()
+				end
+			end
+
+			if not grid:canPlaceAt(x, y) then
+				gameOver()
+			end
+
+			grid:clear()
+			fruit:set(fruit.x, fruit.y)
+			snake.tail:update()
+			snake.x, snake.y = x, y
+			snake.head:set(x, y)
 		end
 		update.total = update.total - update.rate
     end
