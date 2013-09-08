@@ -21,7 +21,7 @@ function grid:draw()
 end
 
 function grid:placeAt(x, y, is, obj)
-	if self:isFree(x, y) and self:canPlaceAt(x, y) then
+	if self:canPlaceAt(x, y) and self:isFree(x, y) then
 		table.insert(self.tiles, {x = x, y = y, is = is, obj = obj})
 		return true
 	else
@@ -42,7 +42,7 @@ function grid:isFree(x, y)
 end
 
 function grid:canPlaceAt(x, y)
-	return (x >= 0) and (x <= self.x) and (y >= 0) and (y <= self.y)
+	return (x >= 0) and (x < self.x) and (y >= 0) and (y < self.y)
 end
 
 return grid
