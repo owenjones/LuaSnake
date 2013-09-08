@@ -26,7 +26,7 @@ end
 function section:draw()
 	local r, g, b, a = love.graphics.getColor()
 	local size = grid.size
-	love.graphics.setColor(0, 0, 0)
+	love.graphics.setColor(5, 5, 5)
 	love.graphics.rectangle("fill", (self.x*size)+4, (self.y*size)+4, size, size)
 	love.graphics.setColor(r, g, b, a)
 end
