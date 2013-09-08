@@ -20,7 +20,7 @@ end
 function fruit:draw()
 	local r, g, b, a = love.graphics.getColor()
 	local size = grid.size
-	love.graphics.setColor(255, 0, 0)
+	love.graphics.setColor(5, 5, 5, 128)
 	love.graphics.circle("fill", (self.x*size)+(size/2)+4, (self.y*size)+(size/2)+4, (size/2), 100)
 	love.graphics.setColor(r, g, b, a)
 end
