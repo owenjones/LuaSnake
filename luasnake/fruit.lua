@@ -17,6 +17,15 @@ function fruit:collision(x, y)
 	return (x == self.x) and (y == self.y)
 end
 
+function fruit:move()
+	local x, y = math.random(0, grid.x - 1), math.random(0, grid.y - 1)
+	if grid:isFree(x, y) then
+		self.x, self.y = x, y
+	else
+		fruit:move()
+	end
+end
+
 function fruit:draw()
 	local r, g, b, a = love.graphics.getColor()
 	local size = grid.size
