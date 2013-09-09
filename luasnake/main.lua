@@ -11,7 +11,6 @@
 	TODO: * Add a scoreboard
 	      * Add sounds
 		  * Add control/help dialogues
-		  * Refactor/tidy-up (e.g. integrate extendSnake into snake object)
 --]]
 
 require('graphics')
@@ -31,7 +30,7 @@ game = setmetatable({
 	score    = 0
 }, game)
 
-directions = {["up"] = 0, ["right"] = 1, ["down"] = 2, ["left"] = 3}
+directions = {["up"] = 1, ["right"] = 2, ["down"] = 3, ["left"] = 4}
 
 update = setmetatable({
 	total = 0,
