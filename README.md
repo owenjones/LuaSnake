@@ -2,7 +2,12 @@ LuaSnake
 ========
 Snake, in Lua, using the Löve engine
 
-##To Run
+![image](docs/title.png)
+![image](docs/playing.png)
+![image](docs/gameover.png)
+
+=====
+If you wish to make some modifications and build the game yourself.
 ###Windows
 There's no way to natively create a zip file from the command line on Windows so I'm afraid you're going to have to do it yourself..
 
@@ -20,7 +25,3 @@ Name this created file "luasnake.love" and double click it to run the game.
 ###Linux
 Run the "./linux.sh" file to build and run the game.
 
-##In Action
-![image](docs/title.png)
-![image](docs/playing.png)
-![image](docs/gameover.png)
