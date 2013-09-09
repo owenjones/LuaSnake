@@ -19,10 +19,10 @@ end
 
 function fruit:move()
 	local x, y = math.random(0, grid.x - 1), math.random(0, grid.y - 1)
-	if grid:isFree(x, y) then
+	if grid:isFree(x, y) and (self.x ~= x) and (self.y ~= y)then
 		self.x, self.y = x, y
 	else
-		fruit:move()
+		self:move()
 	end
 end
 
