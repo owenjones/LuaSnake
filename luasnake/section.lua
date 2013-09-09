@@ -2,9 +2,13 @@
 
 local section = {} ; section.__index = section
 
-function section.new(p)
-	p = p or false
-	local s = setmetatable({parent = p, x = -1, y = -1}, section)
+function section.new(p, i)
+	local s = setmetatable({
+		parent = p,
+		id = i,
+		x = -1,
+		y = -1
+	}, section)
 	return s
 end
 
@@ -23,12 +27,24 @@ function section:update()
 	end
 end
 
+function section:opacity()
+	if self.id == 1 then
+		return 255
+	else
+		local o = 255 - self.id
+		if o < 128 then
+			o = 128
+		end
+		return o
+	end
+end
+
 function section:draw()
 	local r, g, b, a = love.graphics.getColor()
 	local size = grid.size
-	love.graphics.setColor(163, 206, 39)
+	local o = self:opacity()
+	love.graphics.setColor(163, 206, 39, o)
 	love.graphics.rectangle("fill", (self.x*size)+4, (self.y*size)+4, size, size)
-	--love.graphics.circle("fill", (self.x*size)+(size/2)+4, (self.y*size)+(size/2)+4, (size/2), 100)
 	love.graphics.setColor(r, g, b, a)
 end
 
