@@ -23,6 +23,7 @@ game = setmetatable({
 	playing  = false,
 	paused   = false,
 	ended    = false,
+	stats    = false, -- Display stats in bottom right corner
 	mode     = 1, -- 1: Can't pass through walls or self,
 	              -- 2: Can pass through walls but not self,
 	              -- 3: Can pass through walls and self
@@ -79,7 +80,7 @@ function love.draw()
 	if game.playing and not game.ended then
 		canvas:renderTo(drawGrid)
 		canvas:renderTo(drawScore)
-		if dev then
+		if game.stats then
 			canvas:renderTo(drawStats)
 		end
 	elseif game.ended then
@@ -107,6 +108,8 @@ function love.keypressed(key)
 			end
 		elseif key == "1" or key == "2" or key == "3" then
 			game.mode = tonumber(key)
+		elseif key == "s" then
+			game.stats = not game.stats
 		end
 	else
 		if game.paused then
