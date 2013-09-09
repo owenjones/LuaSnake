@@ -3,7 +3,12 @@
 local grid = {} ; grid.__index = grid
 
 function grid.new(x, y, size)
-	local g = setmetatable({x = x, y = y, size = size}, grid)
+	local g = setmetatable({
+		x = x,
+		y = y,
+		size = size
+	}, grid)
+
 	g:clear()
 	return g
 end
@@ -21,7 +26,7 @@ function grid:draw()
 end
 
 function grid:placeAt(x, y, is, obj)
-	if self:canPlaceAt(x, y) and self:isFree(x, y) then
+	if self:canPlaceAt(x, y) then
 		table.insert(self.tiles, {x = x, y = y, is = is, obj = obj})
 		return true
 	else
