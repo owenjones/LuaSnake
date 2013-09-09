@@ -15,6 +15,7 @@ end
 
 function grid:clear()
 	self.tiles = {}
+	self.coords = {}
 end
 
 function grid:draw()
@@ -28,6 +29,7 @@ end
 function grid:placeAt(x, y, is, obj)
 	if self:canPlaceAt(x, y) then
 		table.insert(self.tiles, {x = x, y = y, is = is, obj = obj})
+		self.coords[x .. "|" .. y] = true
 		return true
 	else
 		return false
@@ -35,15 +37,11 @@ function grid:placeAt(x, y, is, obj)
 end
 
 function grid:isFree(x, y)
-	if self.tiles then
-		for _, tile in pairs(self.tiles) do
-			if (x == tile.x) and (y == tile.y) then
-				return false
-			end
-		end
+	if self.coords[x .. "|" .. y] then
+		return false
+	else
+		return true
 	end
-
-	return true
 end
 
 function grid:canPlaceAt(x, y)
