@@ -16,11 +16,7 @@ Open the folder "luasnake" and select all the contents, right click > "Send To" 
 Name this zip file "luasnake.love" and double click it to run the game.
 
 ###OS X
-If developer tools are installed then just open terminal and run "./osx.sh" to build the luasnake.love file and then run the game.
-
-Otherwise, open the "luasnake" folder, select all the contents and right click > "Compress Items".
-
-Name this created file "luasnake.love" and double click it to run the game.
+Run "./osx.sh" to build the luasnake.love file and then run the game.
 
 ###Linux
 Run the "./linux.sh" file to build and run the game.
