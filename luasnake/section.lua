@@ -28,15 +28,11 @@ function section:update()
 end
 
 function section:opacity()
-	if self.id == 1 then
-		return 255
-	else
-		local o = 255 - self.id
-		if o < 128 then
-			o = 128
-		end
-		return o
+	local o = 255 - (self.id - 1)
+	if o < 128 then
+		o = 128
 	end
+	return o
 end
 
 function section:draw()
