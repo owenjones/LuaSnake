@@ -11,6 +11,7 @@ function snake.new()
 		nextDirection = 2,
 		head = false,
 		tail = false,
+		sections = 1
 	}, snake)
 
 	s:make()
@@ -40,11 +41,10 @@ end
 
 function snake:extend(num)
 	for i = 1, num do
-		local id = game.sections + i
-		local s = Section.new(self.tail, id)
+		self.sections = self.sections + 1
+		local s = Section.new(self.tail, self.sections)
 		self.tail = s
 	end
-	game.sections = game.sections + num
 end
 
 return snake
