@@ -29,23 +29,10 @@ function snake:move()
 	x = x + change[self.direction][1]
 	y = y + change[self.direction][2]
 
-	-- Wall wrap-around if in game modes 1 & 2
+	-- Wall wrap-around if in game modes 2 & 3
 	if game.mode > 1 then
-		if x >= grid.x then
-			x = 0
-		end
-
-		if y >= grid.y then
-			y = 0
-		end
-
-		if x < 0 then
-			x = grid.x - 1
-		end
-
-		if y < 0 then
-			y = grid.y - 1
-		end
+		x = x % grid.x
+		y = y % grid.y
 	end
 
 	return x, y
