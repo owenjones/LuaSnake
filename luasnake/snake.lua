@@ -1,7 +1,7 @@
 -- snake.lua
-local Section = require('section')
-
 local snake = {} ; snake.__index = snake
+
+local Section = require('section')
 
 function snake.new()
 	local s = setmetatable({
@@ -11,6 +11,7 @@ function snake.new()
 		nextDirection = 2,
 		head = false,
 		tail = false,
+		sections = 1
 	}, snake)
 
 	s:make()
@@ -29,23 +30,10 @@ function snake:move()
 	x = x + change[self.direction][1]
 	y = y + change[self.direction][2]
 
-	-- Wall wrap-around if in game modes 1 & 2
+	-- Wall wrap-around if in game modes 2 & 3
 	if game.mode > 1 then
-		if x >= grid.x then
-			x = 0
-		end
-
-		if y >= grid.y then
-			y = 0
-		end
-
-		if x < 0 then
-			x = grid.x - 1
-		end
-
-		if y < 0 then
-			y = grid.y - 1
-		end
+		x = x % grid.x
+		y = y % grid.y
 	end
 
 	return x, y
@@ -53,11 +41,10 @@ end
 
 function snake:extend(num)
 	for i = 1, num do
-		local id = game.sections + i
-		local s = Section.new(self.tail, id)
+		self.sections = self.sections + 1
+		local s = Section.new(self.tail, self.sections)
 		self.tail = s
 	end
-	game.sections = game.sections + num
 end
 
 return snake
