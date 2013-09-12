@@ -1,7 +1,7 @@
 -- snake.lua
-local Section = require('section')
-
 local snake = {} ; snake.__index = snake
+
+local Section = require('section')
 
 function snake.new()
 	local s = setmetatable({
