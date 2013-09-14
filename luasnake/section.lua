@@ -20,9 +20,7 @@ end
 
 function section:update()
 	if self.parent then
-		self.x = self.parent.x
-		self.y = self.parent.y
-		grid:placeAt(self.x, self.y, "section", self)
+		self:set(self.parent.x, self.parent.y)
 		self.parent:update()
 	end
 end
