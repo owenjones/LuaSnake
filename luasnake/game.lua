@@ -43,7 +43,7 @@ function game:render()
 	end
 
 	if self.paused then
-		canvas:renderTo(drawPausebox)
+		--canvas:renderTo(drawPausebox)
 	end
 
 	love.graphics.draw(canvas)
@@ -90,7 +90,7 @@ function game:input(key)
 			self.mode = tonumber(key)
 			self.modeChanged = true
 		elseif key == "s" then
-			self.stats = not game.stats
+			self.stats = not self.stats
 		end
 	else
 		if self.paused then
