@@ -7,7 +7,8 @@ Snake, in Lua, using the Löve engine
 ![image](docs/gameover.png)
 
 =====
-If you wish to make some modifications and build the game yourself.
+To build:
+
 ###Windows
 There's no way to natively create a zip file from the command line on Windows so I'm afraid you're going to have to do it yourself..
 
