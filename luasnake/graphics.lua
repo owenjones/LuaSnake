@@ -5,8 +5,7 @@ local fonts = setmetatable({
 	biggertext = love.graphics.newFont("fonts/text.ttf", 72),
 	bigtext    = love.graphics.newFont("fonts/text.ttf", 48),
 	text       = love.graphics.newFont("fonts/text.ttf", 24),
-	score      = love.graphics.newFont("fonts/text.ttf", 18),
-	controls   = love.graphics.newFont("fonts/controls.ttf", 20)
+	score      = love.graphics.newFont("fonts/text.ttf", 18)
 }, fonts)
 
 function drawBackground()
