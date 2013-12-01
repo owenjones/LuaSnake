@@ -47,7 +47,7 @@ function game:render()
 	end
 
 	if self.paused then
-		canvas:renderTo(drawPausebox)
+		--canvas:renderTo(drawPausebox)
 	end
 
 	love.graphics.draw(canvas)
