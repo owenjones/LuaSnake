@@ -6,6 +6,7 @@ local fonts = setmetatable({
 	bigtext    = love.graphics.newFont("fonts/text.ttf", 48),
 	text       = love.graphics.newFont("fonts/text.ttf", 24),
 	score      = love.graphics.newFont("fonts/text.ttf", 18),
+	stats      = love.graphics.newFont("fonts/text.ttf", 14),
 	controls   = love.graphics.newFont("fonts/controls.ttf", 20)
 }, fonts)
 
@@ -48,11 +49,16 @@ function drawScore()
 end
 
 function drawStats()
+	if not dev then
+		return false
+	end
+	
 	local r, g, b, a = love.graphics.getColor()
-	love.graphics.setFont(fonts.score)
+	love.graphics.setFont(fonts.stats)
 	love.graphics.setColor(49, 162, 242)
 	love.graphics.printf("Mode: " .. game.mode .. ", Sections: " ..
-		snake.sections .. ", FPS: " .. love.timer.getFPS(), 204, 602, 400, "right")
+		snake.sections .. ", Rate: " .. game.rate .. ", FPS: " .. love.timer.getFPS(),
+		204, 602, 400, "right")
 	love.graphics.setColor(r, g, b, a)
 end
 
