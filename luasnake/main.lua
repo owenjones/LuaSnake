@@ -13,12 +13,8 @@
 --]]
 
 -- Globals
-Game = require('game')
-
-update = setmetatable({
-	total = 0,
-	rate = 0.075
-}, update)
+local Game = require('game')
+local timer = 0
 
 -- LÖVE FUNCTIONS
 function love.load()
@@ -34,10 +30,10 @@ function love.keypressed(key)
 	game:input(key)
 end
 
-function love.update(passed)
-    update.total = update.total + passed
-    if update.total >= update.rate then
+function love.update(delta)
+    timer = timer + delta
+    if timer >= game.rate then
 		game:tick()
-		update.total = update.total - update.rate
+		timer = timer - game.rate
     end
 end

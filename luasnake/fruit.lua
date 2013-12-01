@@ -3,7 +3,7 @@
 local fruit = {} ; fruit.__index = fruit
 
 function fruit.new()
-	local f = setmetatable({}, fruit)
+	local f = setmetatable({kind = "normal"}, fruit)
 	return f
 end
 
@@ -29,7 +29,11 @@ end
 function fruit:draw()
 	local r, g, b, a = love.graphics.getColor()
 	local size = grid.size
-	love.graphics.setColor(190, 38, 51)
+	if self.kind == "normal" then
+		love.graphics.setColor(190, 38, 51)
+	else
+		love.graphics.setColor(49, 162, 242)
+	end
 	love.graphics.rectangle("fill", (self.x*size)+4, (self.y*size)+4, size, size)
 	love.graphics.setColor(r, g, b, a)
 end

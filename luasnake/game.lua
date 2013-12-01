@@ -11,6 +11,8 @@ local scoreFile = "highscore.txt"
 
 function game.new()
 	local g = setmetatable({
+		rate        = 0.075,
+		rateMax     = 0.08,
 		playing     = false,
 		paused      = false,
 		ended       = false,
@@ -20,8 +22,10 @@ function game.new()
 		                -- 3: Can pass through walls and self
 		modeChanged = false,
 		score       = 0,
-		highScore   = 0
+		highScore   = 0,
+		special = false
 	}, game)
+
 	return g
 end
 
@@ -58,7 +62,21 @@ function game:tick()
 			if fruit:collision(x, y) then
 				fruit:move()
 				snake:extend(5)
-				self:scores(10)
+				if self.rate < self.rateMax then
+					self.rate = self.rate - 0.0005
+				end
+
+				if fruit.kind == "normal" then
+					self:scores(10)
+				else
+					self:endSpecial()
+					self:scores(50)
+				end
+
+				if (self.score == 100) or ((self.score % 300) == 0) then
+					self:enterSpecial()
+				end
+
 			elseif self.mode ~= 3 then
 				self:over()
 			end
@@ -105,6 +123,7 @@ function game:input(key)
 	end
 end
 
+-- General Game Methods
 function game:init()
 	self:loadHighScore()
 
@@ -122,6 +141,7 @@ function game:restart()
 	self.ended = false
 	self.paused = false
 	self.score = 0
+	self.rate = 0.075
 
 	-- As scores can only be obtained in GM1, reset this flag if we changed back
 	if self.mode == 1 then
@@ -147,6 +167,7 @@ function game:over()
 	end
 end
 
+-- High Score Methods
 function game:scores(increase)
 	self.score = self.score + increase
 end
@@ -166,6 +187,21 @@ end
 
 function game:newHighScore(score)
 	love.filesystem.write(scoreFile, score)
+end
+
+-- Special Fruit Mode
+function game:enterSpecial()
+	self.tRate = self.rate
+	self.rate = self.rate - 0.02
+
+	game.special = true
+	fruit.kind = "special"
+end
+
+function game:endSpecial()
+	self.rate = self.tRate
+	game.special = false
+	fruit.kind = "normal"
 end
 
 return game

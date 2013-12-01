@@ -27,8 +27,8 @@ end
 
 function section:opacity()
 	local o = 255 - (self.id - 1)
-	if o < 128 then
-		o = 128
+	if o < 100 then
+		o = 100
 	end
 	return o
 end
