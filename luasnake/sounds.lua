@@ -1,15 +1,18 @@
 -- sounds.lua
 
+Player = require("player")
+
 local sound = {} ; sound.__index = sound
 
 local sounds = {
-	test = love.audio.newSource("sounds/test.ogg", "static")
+	eat = love.audio.newSource("sounds/eat.wav", "static")
 }
 
 local queue = {}
 
 function sound:trigger(ref)
-	love.audio.play(sounds[ref])
+	local p = Player.new(sounds[ref])
+	p:play()
 end
 
 return sound
