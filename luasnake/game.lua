@@ -2,6 +2,7 @@
 local game = {} ; game.__index = game
 
 require('graphics')
+local sound = require('sounds')
 local Grid = require('grid')
 local Fruit = require('fruit')
 local Snake = require('snake')
@@ -91,6 +92,8 @@ function game:tick()
 		snake.tail:update()
 		snake.x, snake.y = x, y
 		snake.head:set(x, y)
+
+		--sound:trigger("test")
 	end
 end
 
