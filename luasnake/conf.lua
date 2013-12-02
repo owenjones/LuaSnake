@@ -1,6 +1,6 @@
 -- conf.lua
 
-dev = false
+dev = true
 
 function love.conf(s)
 	s.title    = "LuaSnake"
