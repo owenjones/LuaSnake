@@ -61,6 +61,7 @@ function game:tick()
 
 		if not grid:isFree(x, y) then
 			if fruit:collision(x, y) then
+				sound:trigger("eat")
 				fruit:move()
 				snake:extend(5)
 				if self.rate < self.rateMax then
@@ -92,8 +93,6 @@ function game:tick()
 		snake.tail:update()
 		snake.x, snake.y = x, y
 		snake.head:set(x, y)
-
-		--sound:trigger("test")
 	end
 end
 
