@@ -48,10 +48,6 @@ function drawScore()
 end
 
 function drawStats()
-	if not dev then
-		return false
-	end
-
 	local r, g, b, a = love.graphics.getColor()
 	love.graphics.setFont(fonts.stats)
 	love.graphics.setColor(49, 162, 242)
