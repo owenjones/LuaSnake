@@ -20,6 +20,7 @@ function game.new()
 		ended       = false,
 		stats       = false, -- Display stats in bottom right corner
 		special     = false,
+		muted       = false,
 		mode        = 1,     -- 1: Can't pass through walls or self,
 		                     -- 2: Can pass through walls but not self,
 		                     -- 3: Can pass through walls and self
@@ -117,6 +118,8 @@ function game:input(key)
 			self.stats = not self.stats
 		elseif key == "p" and dev then
 			self:enterSpecial()
+		elseif key == "m" then
+			self.muted = not self.muted
 		end
 	else
 		if self.paused then

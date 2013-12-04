@@ -33,10 +33,12 @@ end
 local mover = player.new(sounds["move"], true)
 
 function sound:trigger(ref)
-	if ref == "move" then
-		mover:play()
-	else
-		player.new(sounds[ref]):play()
+	if not game.muted then
+		if ref == "move" then
+			mover:play()
+		else
+			player.new(sounds[ref]):play()
+		end
 	end
 end
 
