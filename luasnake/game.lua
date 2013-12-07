@@ -118,6 +118,8 @@ function game:input(key)
 			self.stats = not self.stats
 		elseif key == "p" and dev then
 			self:enterSpecial()
+
+		-- Muting Sounds
 		elseif key == "m" then
 			self.muted = not self.muted
 		end
