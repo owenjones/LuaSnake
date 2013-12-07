@@ -8,7 +8,7 @@ local Fruit = require('fruit')
 local Snake = require('snake')
 
 local directions = {["up"] = 1, ["right"] = 2, ["down"] = 3, ["left"] = 4}
-local scoreFile = "highscore.txt"
+local configFile = "config.txt"
 
 function game.new()
 	local g = setmetatable({
@@ -100,108 +100,128 @@ function game:tick()
 end
 
 function game:input(key)
-	if self.playing and not self.paused then
-		if key == "escape" then
-			self:pause()
-		elseif directions[key] then
-			-- Test to stop snake doubling back on itself, unless GM3
-			if (self.mode ~= 3 and math.abs(directions[key] - snake.direction) ~= 2)
-				or (self.mode == 3) then
-				snake.nextDirection = directions[key]
-			end
-		elseif key == "1" or key == "2" or key == "3" then
-			self.mode = tonumber(key)
-			self.modeChanged = true
+    if self.playing and not self.paused then
+    	if key == "escape" then
+    		self:pause()
+    	elseif directions[key] then
+    		-- Test to stop snake doubling back on itself, unless GM3
+    		if (self.mode ~= 3 and math.abs(directions[key] - snake.direction) ~= 2)
+    			or (self.mode == 3) then
+    			snake.nextDirection = directions[key]
+    		end
+    	elseif key == "1" or key == "2" or key == "3" then
+    		self.mode = tonumber(key)
+    		self.modeChanged = true
 
-		-- Development Modes :3
-		elseif key == "s" and dev then
-			self.stats = not self.stats
-		elseif key == "p" and dev then
-			self:enterSpecial()
+    	-- Development Modes :3
+    	elseif key == "s" and dev then
+    		self.stats = not self.stats
+    	elseif key == "p" and dev then
+    		self:enterSpecial()
 
-		-- Muting Sounds
-		elseif key == "m" then
-			self.muted = not self.muted
-		end
-	else
-		if self.paused then
-			self:pause()
-		end
+    	-- Muting Sounds
+    	elseif key == "m" then
+    		self:mute()
+    	end
+    else
+    	if self.paused then
+    		self:pause()
+    	end
 
-		self:play()
-	end
+    	self:play()
+    end
 
-	if self.ended then
-			self:restart()
-	end
+    if self.ended then
+    	self:restart()
+    end
 end
 
 -- General Game Methods
 function game:init()
-	self:loadHighScore()
+    self:loadConfig()
 
-	canvas = love.graphics.newCanvas()
-	grid = Grid.new(40, 40, 15)
+    canvas = love.graphics.newCanvas()
+    grid = Grid.new(40, 40, 15)
 
-	snake = Snake.new()
-	snake:extend(4)
+    snake = Snake.new()
+    snake:extend(4)
 
-	fruit = Fruit.new()
-	fruit:move()
+    fruit = Fruit.new()
+    fruit:move()
 end
 
 function game:restart()
-	self.ended = false
-	self.paused = false
-	self.score = 0
-	self.rate = 0.075
-	self.special = false
+    self.ended = false
+    self.paused = false
+    self.score = 0
+    self.rate = 0.075
+    self.special = false
 
-	-- As scores can only be obtained in GM1, reset this flag if we changed back
-	if self.mode == 1 then
-		self.modeChanged = false
-	end
+    -- As scores can only be obtained in GM1, reset this flag if we changed back
+    if self.mode == 1 then
+    	self.modeChanged = false
+    end
 
-	self:init()
+    self:init()
 end
 
 function game:play()
-	self.playing = true
+    self.playing = true
 end
 
 function game:pause()
-	self.paused = not self.paused
+    self.paused = not self.paused
 end
 
 function game:over()
-	sound:trigger("die")
-	self.ended = true
+    sound:trigger("die")
+    self.ended = true
 
-	if self:isHighScore() then
-		self:newHighScore(self.score)
-	end
+    if self:isHighScore() then
+    	self:saveConfig()
+    end
+end
+
+function game:mute()
+    self.muted = not self.muted
+    self:saveConfig()
 end
 
 -- High Score Methods
 function game:scores(increase)
-	self.score = self.score + increase
+    self.score = self.score + increase
 end
 
 function game:isHighScore()
-	return (self.score > self.highScore) and not self.modeChanged
+    return (self.score > self.highScore) and not self.modeChanged
 end
 
-function game:loadHighScore()
-	if love.filesystem.exists(scoreFile) then
-		local score, _ = love.filesystem.read(scoreFile)
-		self.highScore = tonumber(score)
-	else
-		self.highScore = 0
-	end
+
+function game:loadConfig()
+    if love.filesystem.exists(configFile) then
+    	local config, _ = love.filesystem.read(configFile)
+    	local t = {}
+    	for k, v in string.gmatch(config, "(%w+)=(%w+)") do
+    	    t[k] = v
+    	 end
+
+    	 self.highScore = tonumber(t["highScore"])
+    	 self.muted = t["muted"]
+    end
 end
 
-function game:newHighScore(score)
-	love.filesystem.write(scoreFile, score)
+function game:saveConfig()
+    local score = 0
+    if self:isHighScore() then
+	score = self.score
+    else
+	score = self.highScore
+    end
+
+    local config = "highScore=" .. tostring(score)..
+                   ",muted=" .. tostring(self.muted)
+
+    love.filesystem.write(configFile, config)
 end
 
 -- Special Fruit Mode
