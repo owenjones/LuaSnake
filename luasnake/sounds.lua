@@ -20,7 +20,7 @@ end
 
 function player:play()
 	-- As the game ticks so much, only play one copy of the moving sound at a time
-	if not self.o or (self.o and love.audio.getNumSources() == 0) then
+	if not self.o or (self.o and love.audio.getSourceCount() == 0) then
 		love.audio.play(self.s)
 	end
 end
