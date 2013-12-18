@@ -1,5 +1,7 @@
-LuaSnake - Now updated for 0.9.0
+LuaSnake
 ========
+**Now updated for 0.9.0**
+
 Snake, in Lua, using the Löve engine
 
 ![image](docs/title.png)
