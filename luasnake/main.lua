@@ -8,8 +8,7 @@
 
     Released under an Apache V2 License
 
-	TODO: * Add sounds
-	      * Add control/help dialogues
+	TODO: * Add control/help dialogues
 --]]
 
 -- Globals
