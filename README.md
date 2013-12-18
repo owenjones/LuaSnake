@@ -1,4 +1,4 @@
-LuaSnake
+LuaSnake - Now updated for 0.9.0
 ========
 Snake, in Lua, using the Löve engine
 
@@ -6,8 +6,7 @@ Snake, in Lua, using the Löve engine
 ![image](docs/playing.png)
 ![image](docs/gameover.png)
 
-=====
-To build:
+##To build
 
 ###Windows
 There's no way to natively create a zip file from the command line on Windows so I'm afraid you're going to have to do it yourself..
