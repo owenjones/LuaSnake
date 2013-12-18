@@ -100,39 +100,41 @@ function game:tick()
 end
 
 function game:input(key)
-    if self.playing and not self.paused then
+	if key == "q" then
+		self:exit()
+
+	elseif self.ended then
+		self:restart()
+
+	elseif self.paused then
+		self:pause()
+
+    elseif self.playing then
     	if key == "escape" then
     		self:pause()
+
     	elseif directions[key] then
     		-- Test to stop snake doubling back on itself, unless GM3
     		if (self.mode ~= 3 and math.abs(directions[key] - snake.direction) ~= 2)
     			or (self.mode == 3) then
     			snake.nextDirection = directions[key]
     		end
+
     	elseif key == "1" or key == "2" or key == "3" then
     		self.mode = tonumber(key)
     		self.modeChanged = true
 
-    	-- Development Modes :3
+    	-- Development Mode :3
     	elseif key == "s" and dev then
     		self.stats = not self.stats
-    	elseif key == "p" and dev then
-    		self:enterSpecial()
 
     	-- Muting Sounds
     	elseif key == "m" then
     		self:mute()
-    	end
-    else
-    	if self.paused then
-    		self:pause()
-    	end
+		end
 
-    	self:play()
-    end
-
-    if self.ended then
-    	self:restart()
+	else
+		self:play()
     end
 end
 
@@ -140,7 +142,7 @@ end
 function game:init()
     self:loadConfig()
 
-    canvas = love.graphics.newCanvas()
+	canvas = love.graphics.newCanvas()
     grid = Grid.new(40, 40, 15)
 
     snake = Snake.new()
@@ -187,6 +189,10 @@ function game:mute()
     self:saveConfig()
 end
 
+function game:exit()
+	love.event.quit()
+end
+
 -- High Score Methods
 function game:scores(increase)
     self.score = self.score + increase
@@ -201,25 +207,29 @@ function game:loadConfig()
     if love.filesystem.exists(configFile) then
     	local config, _ = love.filesystem.read(configFile)
     	local t = {}
-    	for k, v in string.gmatch(config, "(%w+)=(%w+)") do
+    	for k, v in string.gmatch(config, "--(%w+)=(%w+)") do
     	    t[k] = v
     	 end
 
     	 self.highScore = tonumber(t["highScore"])
-    	 self.muted = t["muted"]
+
+		 if t["muted"] == "true" then
+			 self.muted = true
+		 else
+			 self.muted = false
+		 end
     end
 end
 
 function game:saveConfig()
     local score = 0
     if self:isHighScore() then
-	score = self.score
+		score = self.score
     else
-	score = self.highScore
+		score = self.highScore
     end
 
-    local config = "highScore=" .. tostring(score)..
-                   ",muted=" .. tostring(self.muted)
+    local config = "--highScore=" .. tostring(score) .. "--muted=" .. tostring(self.muted)
 
     love.filesystem.write(configFile, config)
 end
