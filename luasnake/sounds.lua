@@ -8,7 +8,6 @@ local sounds = {
 	eat         = love.audio.newSource("sounds/eat.ogg", "static"),
 	eat_special = love.audio.newSource("sounds/eat_special.ogg", "static"),
 	die         = love.audio.newSource("sounds/die.ogg", "static"),
-	move        = love.audio.newSource("sounds/move.ogg", "static")
 }
 
 

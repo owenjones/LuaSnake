@@ -95,7 +95,6 @@ function game:tick()
 		snake.tail:update()
 		snake.x, snake.y = x, y
 		snake.head:set(x, y)
-		sound:trigger("move")
 	end
 end
 
