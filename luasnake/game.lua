@@ -33,7 +33,6 @@ function game.new()
 end
 
 function game:render()
-	canvas:clear()
 	canvas:renderTo(drawBackground)
 
 	if self.playing and not self.ended then

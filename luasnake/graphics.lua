@@ -10,6 +10,7 @@ local fonts = setmetatable({
 }, fonts)
 
 function drawBackground()
+	love.graphics.clear(0, 0, 0, 255)
 	love.graphics.setBackgroundColor(0, 0, 0)
 	local r, g, b, a = love.graphics.getColor()
 	love.graphics.setColor(27, 38, 50)
